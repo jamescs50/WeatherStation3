@@ -11,7 +11,8 @@
 #define PIN_B 17
 #define PIN_C 18
 #define PIN_READ 25
-#define PIN_INHIBIT 26
+#define PIN_1INHIBIT 26
+#define PIN_2INHIBIT 27
 
 
 void intToBits(int num, int bits[], int size) {
@@ -30,18 +31,23 @@ int bitsToInt(int bits[], int size) {
 }
 
 
-void app_main(void)
+int read_multiplex(int which)
 {
-    gpio_set_direction(PIN_A, GPIO_MODE_OUTPUT);
-    gpio_pulldown_en(PIN_A);
-    gpio_set_direction(PIN_B, GPIO_MODE_OUTPUT);
-    gpio_pulldown_en(PIN_B);
-    gpio_set_direction(PIN_C, GPIO_MODE_OUTPUT);
-    gpio_pulldown_en(PIN_B);
+    switch(which){
+        case 1:{
+            gpio_set_level(PIN_1INHIBIT, 0);
+            //gpio_set_level(PIN_2INHIBIT, 1);
+            printf("Reading 1 \n");
+            break;
+        }
+        case 2:{
+            gpio_set_level(PIN_1INHIBIT, 1);
+            //gpio_set_level(PIN_2INHIBIT, 0);
+            printf("Reading 2 \n");
+            break;
+        }
+    }
     
-    /*
-    */
-
     int readbits[8];
     int setbits[3];
 
@@ -50,15 +56,46 @@ void app_main(void)
         gpio_set_level(PIN_A,setbits[0]);
         gpio_set_level(PIN_B,setbits[1]);
         gpio_set_level(PIN_C,setbits[2]);
+        //printf("pins set at: ");
+        //for (int i = 0; i < 3; i++) {
+        //    printf("%d", setbits[i]);
+        //}
+        //printf("\n");
         readbits[i] = gpio_get_level(PIN_READ);
+        //printf("result is %d", gpio_get_level(PIN_READ));
+        //printf("\n");
     }
-
+    
     printf("Binary array: ");
     for (int i = 0; i < 8; i++) {
         printf("%d", readbits[i]);
     }
+    printf("\n");
+
+    return bitsToInt(readbits, 8);
 
 }
 
+void app_main(void)
+{
+    gpio_set_direction(PIN_A, GPIO_MODE_OUTPUT);
+    gpio_pulldown_en(PIN_A);
+    gpio_set_direction(PIN_B, GPIO_MODE_OUTPUT);
+    gpio_pulldown_en(PIN_B);
+    gpio_set_direction(PIN_C, GPIO_MODE_OUTPUT);
+    gpio_pulldown_en(PIN_B);
+    gpio_set_direction(PIN_READ, GPIO_MODE_INPUT);
+    gpio_set_direction(PIN_1INHIBIT, GPIO_MODE_OUTPUT);
+    gpio_pulldown_en(PIN_1INHIBIT);
+    gpio_set_direction(PIN_2INHIBIT, GPIO_MODE_OUTPUT);
+    gpio_pulldown_en(PIN_2INHIBIT);
+
+
+    while (true){
+        printf("Result: %d \n",read_multiplex(1));
+        vTaskDelay(5000 / portTICK_PERIOD_MS);    
+    }
+
+}
 
 
