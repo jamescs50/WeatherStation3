@@ -36,14 +36,12 @@ int read_multiplex(int which)
     switch(which){
         case 1:{
             gpio_set_level(PIN_1INHIBIT, 0);
-            //gpio_set_level(PIN_2INHIBIT, 1);
-            printf("Reading 1 \n");
+            gpio_set_level(PIN_2INHIBIT, 1);            
             break;
         }
         case 2:{
             gpio_set_level(PIN_1INHIBIT, 1);
-            //gpio_set_level(PIN_2INHIBIT, 0);
-            printf("Reading 2 \n");
+            gpio_set_level(PIN_2INHIBIT, 0);            
             break;
         }
     }
@@ -56,14 +54,8 @@ int read_multiplex(int which)
         gpio_set_level(PIN_A,setbits[0]);
         gpio_set_level(PIN_B,setbits[1]);
         gpio_set_level(PIN_C,setbits[2]);
-        //printf("pins set at: ");
-        //for (int i = 0; i < 3; i++) {
-        //    printf("%d", setbits[i]);
-        //}
-        //printf("\n");
+        vTaskDelay(0.1 / portTICK_PERIOD_MS);
         readbits[i] = gpio_get_level(PIN_READ);
-        //printf("result is %d", gpio_get_level(PIN_READ));
-        //printf("\n");
     }
     
     printf("Binary array: ");
@@ -91,9 +83,12 @@ void app_main(void)
     gpio_pulldown_en(PIN_2INHIBIT);
 
 
+    int c = 0;
     while (true){
+        c++;
+        printf("counter %d \n",c);
         printf("Result: %d \n",read_multiplex(1));
-        vTaskDelay(5000 / portTICK_PERIOD_MS);    
+        vTaskDelay(4999 / portTICK_PERIOD_MS);    
     }
 
 }
