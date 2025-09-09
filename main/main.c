@@ -54,7 +54,7 @@ int read_multiplex(int which)
         gpio_set_level(PIN_A,setbits[0]);
         gpio_set_level(PIN_B,setbits[1]);
         gpio_set_level(PIN_C,setbits[2]);
-        vTaskDelay(1);  //small delay for CD4051 to switch
+        vTaskDelay(1);  //small delay for CD4051 to switch the switch takes (max)60 ns - the deay should be about 10 us)
         readbits[i] = gpio_get_level(PIN_READ);
     }
     
