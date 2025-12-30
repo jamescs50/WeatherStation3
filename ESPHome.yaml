@@ -51,21 +51,20 @@ sensor:
       name: "BME280 Humidity"    
 
   - platform: adc
-    pin: GPIO26
-    id: adc0
     name: "Source for resistance"
+    id: adc0
+    pin: GPIO26
     update_interval: 10s
   - platform: resistance
+    name: Resistance Sensor    
+    id: wv_resistance    
     sensor: adc0
-    id: wv_resistance
     configuration: DOWNSTREAM
     resistor: 10.0kOhm
-
-    name: Resistance Sensor    
-
   - platform: template
     icon: mdi:windsock
     name: "Wind Direction"
+    update_interval: 10s
     id: wind_direction
     lambda: |-
       if (id(wv_resistance).state > 200000)
@@ -141,6 +140,16 @@ sensor:
         return -1;    //resistance too low
       };
 
+  - platform: pulse_counter
+    pin: GPIO18
+    id: anemometer
+    icon: mdi:Wind
+    name: "Anemometer"
+  - platform: pulse_counter
+    pin: GPIO19
+    icon: mdi:Rain
+    id: rain
+    name: "Rain Gauge"
 
 status_led:
   pin:
